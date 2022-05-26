@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Post;
+use App\Category;
+use App\User;
+
 
 class PostController extends Controller
 {
@@ -13,13 +16,39 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::paginate(15);
+
+        // dd($request);
+
+        $posts = Post::whereRaw('1 = 1');
+
+        if ($request->s) {
+            $posts->where(function($query) use ($request) { // per aggiungere le parentesi nell'SQL
+                $query->where('title', 'LIKE', "%$request->s%")
+                    ->orWhere('content', 'LIKE', "%$request->s%");
+            });
+        }
+
+        if ($request->category) {
+            $posts->where('category_id', $request->category);
+        }
+
+        if ($request->author) {
+            $posts->where('user_id', $request->author);
+        }
+
+        $posts = $posts->paginate(15);
+
+        $categories = Category::all();
+        $users = User::all();
 
         return response()->json([
-            'status'    => 'success',
-            'data'      => $posts,
+            'status'        => 'success',
+            'data'          => $posts,
+            'categories'    => $categories,
+            'users'         => $users,
+
         ]);
     }
 

@@ -1,12 +1,46 @@
 <template>
     <div class="container">
+        <!-- <post-filter :categories="categories" :users="users" /> -->
+        <form action="" method="get" class="row g-3 mb-3">
+            <div class="col-md-6">
+                <select class="form-select" aria-label="Default select example" name="category" id="category">
+                    <option value="" selected>Select a category</option>
+
+
+                    <option v-for="category in categories" :key="category.id" :value="$category.id">{{ $category.name }}</option>
+
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <select class="form-select" aria-label="Default select example" name="author" id="author">
+                    <option value="" selected>Select an author</option>
+
+
+                    <option v-for="user in users" :key="user.id" :value="$user.id" >{{ $user.name }}</option>
+
+                </select>
+            </div>
+
+            <div class="col-md-10">
+                <label for="search-string" class="form-label">stringa di ricerca</label>
+                <input type="text" class="form-control" id="search-string" name="s" value="">
+            </div>
+
+            <div class="col-md-2">
+                <button class="btn btn-primary">Applica filtri</button>
+            </div>
+        </form>
+
+
+
         <div class="row justify-content-center g-4">
             <div class="col-md-4" v-for="post in posts" :key="post.id">
                 <div class="card h-100">
-                    <!-- <img src="..." class="card-img-top" alt="..."> -->
+                    <img :src="post.media" class="card-img-top" alt="...">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">{{ post.title }}</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <p class="card-text">{{ post.content }}</p>
                         <a :href="'/posts/' + post.slug" class="btn btn-primary mt-auto align-self-start">Read more</a>
                     </div>
                 </div>
@@ -49,11 +83,18 @@
 </template>
 
 <script>
+import PostFilter from './PostFilter.vue'
+
     export default {
         name: 'CardContainer',
+        components: {
+            PostFilter,
+        },
         data() {
             return {
                 posts: [],
+                categories: [],
+                users: [],
 
                 baseApiUrl: 'http://localhost:8000/api/posts',
 
@@ -82,6 +123,9 @@
                         this.nCurrentPage = res.data.data.current_page;
                         this.nLastPage = res.data.data.last_page;
                         this.nNewPage = null;
+                        this.categories = res.data.categories;
+                        this.users = res.data.users;
+                        // console.log(res.data.request);
                     });
                 }
             }

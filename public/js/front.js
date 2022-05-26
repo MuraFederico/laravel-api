@@ -5195,6 +5195,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
+      filterCategory: '',
+      filterUser: '',
+      filterString: '',
       posts: [],
       categories: [],
       users: [],
@@ -5226,6 +5229,13 @@ __webpack_require__.r(__webpack_exports__);
           _this.users = res.data.users; // console.log(res.data.request);
         });
       }
+    },
+    getFilteredData: function getFilteredData() {
+      var _this2 = this;
+
+      Axios.get("http://127.0.0.1:8000/api/posts?category=".concat(this.filterCategory, "&author=").concat(this.filterUser, "&s=").concat(this.filterString)).then(function (res) {
+        _this2.posts = res.data.data.data;
+      });
     }
   },
   created: function created() {
@@ -5284,6 +5294,13 @@ __webpack_require__.r(__webpack_exports__);
   props: {
     categories: Array,
     users: Array
+  },
+  data: function data() {
+    return {
+      filterCategory: '',
+      filterUser: '',
+      filterString: ''
+    };
   }
 });
 
@@ -28687,17 +28704,48 @@ var render = function () {
   return _c("div", { staticClass: "container" }, [
     _c(
       "form",
-      { staticClass: "row g-3 mb-3", attrs: { action: "", method: "get" } },
+      {
+        staticClass: "row g-3 mb-3",
+        on: {
+          submit: function ($event) {
+            $event.preventDefault()
+            return _vm.getFilteredData()
+          },
+        },
+      },
       [
         _c("div", { staticClass: "col-md-6" }, [
           _c(
             "select",
             {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.filterCategory,
+                  expression: "filterCategory",
+                },
+              ],
               staticClass: "form-select",
               attrs: {
                 "aria-label": "Default select example",
                 name: "category",
                 id: "category",
+              },
+              on: {
+                change: function ($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function (o) {
+                      return o.selected
+                    })
+                    .map(function (o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.filterCategory = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                },
               },
             },
             [
@@ -28708,8 +28756,8 @@ var render = function () {
               _vm._l(_vm.categories, function (category) {
                 return _c(
                   "option",
-                  { key: category.id, domProps: { value: _vm.$category.id } },
-                  [_vm._v(_vm._s(_vm.$category.name))]
+                  { key: category.id, domProps: { value: category.id } },
+                  [_vm._v(_vm._s(category.name))]
                 )
               }),
             ],
@@ -28721,11 +28769,34 @@ var render = function () {
           _c(
             "select",
             {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.filterUser,
+                  expression: "filterUser",
+                },
+              ],
               staticClass: "form-select",
               attrs: {
                 "aria-label": "Default select example",
                 name: "author",
                 id: "author",
+              },
+              on: {
+                change: function ($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function (o) {
+                      return o.selected
+                    })
+                    .map(function (o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.filterUser = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                },
               },
             },
             [
@@ -28736,8 +28807,8 @@ var render = function () {
               _vm._l(_vm.users, function (user) {
                 return _c(
                   "option",
-                  { key: user.id, domProps: { value: _vm.$user.id } },
-                  [_vm._v(_vm._s(_vm.$user.name))]
+                  { key: user.id, domProps: { value: user.id } },
+                  [_vm._v(_vm._s(user.name))]
                 )
               }),
             ],
@@ -28745,9 +28816,37 @@ var render = function () {
           ),
         ]),
         _vm._v(" "),
-        _vm._m(0),
+        _c("div", { staticClass: "col-md-10" }, [
+          _c(
+            "label",
+            { staticClass: "form-label", attrs: { for: "search-string" } },
+            [_vm._v("stringa di ricerca")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.filterString,
+                expression: "filterString",
+              },
+            ],
+            staticClass: "form-control",
+            attrs: { type: "text", id: "search-string", name: "s" },
+            domProps: { value: _vm.filterString },
+            on: {
+              input: function ($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.filterString = $event.target.value
+              },
+            },
+          }),
+        ]),
         _vm._v(" "),
-        _vm._m(1),
+        _vm._m(0),
       ]
     ),
     _vm._v(" "),
@@ -28902,23 +29001,6 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-10" }, [
-      _c(
-        "label",
-        { staticClass: "form-label", attrs: { for: "search-string" } },
-        [_vm._v("stringa di ricerca")]
-      ),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "form-control",
-        attrs: { type: "text", id: "search-string", name: "s", value: "" },
-      }),
-    ])
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "col-md-2" }, [
       _c("button", { staticClass: "btn btn-primary" }, [
         _vm._v("Applica filtri"),
@@ -28950,17 +29032,48 @@ var render = function () {
   return _c("div", [
     _c(
       "form",
-      { staticClass: "row g-3 mb-3", attrs: { action: "", method: "get" } },
+      {
+        staticClass: "row g-3 mb-3",
+        on: {
+          submit: function ($event) {
+            $event.preventDefault()
+            return _vm.getFilteredData()
+          },
+        },
+      },
       [
         _c("div", { staticClass: "col-md-6" }, [
           _c(
             "select",
             {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.filterCategory,
+                  expression: "filterCategory",
+                },
+              ],
               staticClass: "form-select",
               attrs: {
                 "aria-label": "Default select example",
                 name: "category",
                 id: "category",
+              },
+              on: {
+                change: function ($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function (o) {
+                      return o.selected
+                    })
+                    .map(function (o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.filterCategory = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                },
               },
             },
             [
@@ -28971,8 +29084,8 @@ var render = function () {
               _vm._l(_vm.categories, function (category) {
                 return _c(
                   "option",
-                  { key: category.id, domProps: { value: _vm.$category.id } },
-                  [_vm._v(_vm._s(_vm.$category.name))]
+                  { key: category.id, domProps: { value: category.id } },
+                  [_vm._v(_vm._s(category.name))]
                 )
               }),
             ],
@@ -28984,11 +29097,34 @@ var render = function () {
           _c(
             "select",
             {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.filterUser,
+                  expression: "filterUser",
+                },
+              ],
               staticClass: "form-select",
               attrs: {
                 "aria-label": "Default select example",
                 name: "author",
                 id: "author",
+              },
+              on: {
+                change: function ($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function (o) {
+                      return o.selected
+                    })
+                    .map(function (o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.filterUser = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                },
               },
             },
             [
@@ -28999,8 +29135,8 @@ var render = function () {
               _vm._l(_vm.users, function (user) {
                 return _c(
                   "option",
-                  { key: user.id, domProps: { value: _vm.$user.id } },
-                  [_vm._v(_vm._s(_vm.$user.name))]
+                  { key: user.id, domProps: { value: user.id } },
+                  [_vm._v(_vm._s(user.name))]
                 )
               }),
             ],
@@ -29008,31 +29144,42 @@ var render = function () {
           ),
         ]),
         _vm._v(" "),
-        _vm._m(0),
+        _c("div", { staticClass: "col-md-10" }, [
+          _c(
+            "label",
+            { staticClass: "form-label", attrs: { for: "search-string" } },
+            [_vm._v("stringa di ricerca")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.filterString,
+                expression: "filterString",
+              },
+            ],
+            staticClass: "form-control",
+            attrs: { type: "text", id: "search-string", name: "s" },
+            domProps: { value: _vm.filterString },
+            on: {
+              input: function ($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.filterString = $event.target.value
+              },
+            },
+          }),
+        ]),
         _vm._v(" "),
-        _vm._m(1),
+        _vm._m(0),
       ]
     ),
   ])
 }
 var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-10" }, [
-      _c(
-        "label",
-        { staticClass: "form-label", attrs: { for: "search-string" } },
-        [_vm._v("stringa di ricerca")]
-      ),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "form-control",
-        attrs: { type: "text", id: "search-string", name: "s", value: "" },
-      }),
-    ])
-  },
   function () {
     var _vm = this
     var _h = _vm.$createElement

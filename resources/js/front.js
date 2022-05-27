@@ -28,10 +28,21 @@ window.Axios = require('axios');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 import App from './views/App.vue';
+import VueRouter from 'vue-router'
+
+Vue.use(VueRouter)
+
+const router = new VueRouter({
+    routes: [
+
+    ]
+  })
+
 
 const app = new Vue({
     el: '#app',
     render: h => h(App),
+    router,
 });
 
 
